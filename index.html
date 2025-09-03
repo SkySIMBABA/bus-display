@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Totoro Bus Arrival Display</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #87ceeb 0%, #98fb98 30%, #90ee90 70%, #32cd32 100%);
+            background-size: 400% 400%;
+            animation: forestBreeze 20s ease-in-out infinite;
+            color: #2d5016;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            position: relative;
+        }
+
+        @keyframes forestBreeze {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="80" r="15" fill="%23228b22" opacity="0.3"/><circle cx="80" cy="75" r="20" fill="%2332cd32" opacity="0.2"/><circle cx="60" cy="90" r="10" fill="%2390ee90" opacity="0.4"/><circle cx="30" cy="60" r="12" fill="%2398fb98" opacity="0.3"/></svg>') repeat;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '🌳';
+            position: absolute;
+            left: 20%;
+            top: -10px;
+            font-size: 2em;
+            animation: sway 3s ease-in-out infinite;
+        }
+
+        .header::after {
+            content: '🍃';
+            position: absolute;
+            right: 20%;
+            top: 20px;
+            font-size: 1.5em;
+            animation: float 4s ease-in-out infinite reverse;
+        }
+
+        @keyframes sway {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(10deg); }
+        }
+
+        .time-display {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(45,80,22,0.4);
+            color: #1a4d0a;
+            position: relative;
+        }
+
+        .time-display::before {
+            content: '🚌';
+            margin-right: 15px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .date-display {
+            font-size: 1.2em;
+            opacity: 0.8;
+            color: #2d5016;
+        }
+
+        .bus-stop-section {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 3px solid rgba(45,80,22,0.3);
+            box-shadow: 0 8px 25px rgba(45,80,22,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bus-stop-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><text x="5" y="15" font-size="12" fill="%2390ee90" opacity="0.1">🌿</text><text x="35" y="35" font-size="10" fill="%2398fb98" opacity="0.1">🍀</text><text x="15" y="40" font-size="8" fill="%2332cd32" opacity="0.1">🌱</text></svg>') repeat;
+            animation: gentleMove 30s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes gentleMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-50px, -50px); }
+        }
+
+        .bus-stop-section > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .bus-stop-header {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #1a4d0a;
+        }
+
+        .bus-stop-header::before {
+            content: '🌲';
+            font-size: 1.2em;
+        }
+
+        .bus-stop-code {
+            background: linear-gradient(135deg, #98fb98, #90ee90);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            color: #1a4d0a;
+            border: 2px solid rgba(45,80,22,0.3);
+            box-shadow: 0 4px 8px rgba(45,80,22,0.1);
+        }
+
+        .bus-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .bus-item {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(144,238,144,0.3));
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(45,80,22,0.2);
+            box-shadow: 0 4px 15px rgba(45,80,22,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bus-item::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 60%;
+            background: linear-gradient(to bottom, #32cd32, #98fb98);
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .bus-item:hover {
+            transform: scale(1.02) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(45,80,22,0.2);
+        }
+
+        .bus-item:hover::before {
+            width: 15px;
+            left: -15px;
+        }
+
+        .bus-item:nth-child(even) {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(152,251,152,0.3));
+        }
+
+        .bus-number {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #1a4d0a;
+            min-width: 80px;
+            background: linear-gradient(135deg, #ffd700, #ffed4a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 2px 2px 4px rgba(45,80,22,0.3);
+            position: relative;
+        }
+
+        .bus-number::before {
+            content: '🚍';
+            position: absolute;
+            left: -35px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.8em;
+            -webkit-text-fill-color: initial;
+        }
+
+        .bus-info {
+            flex: 1;
+            text-align: right;
+        }
+
+        .arrival-time {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #1a4d0a;
+            position: relative;
+        }
+
+        .arrival-details {
+            font-size: 0.9em;
+            opacity: 0.7;
+            color: #2d5016;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 1.2em;
+            opacity: 0.7;
+            color: #2d5016;
+            position: relative;
+        }
+
+        .loading::before {
+            content: '🌿 ';
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: linear-gradient(135deg, rgba(255,182,193,0.8), rgba(255,160,122,0.6));
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            color: #8b0000;
+            border: 2px solid rgba(139,0,0,0.3);
+        }
+
+        .error::before {
+            content: '🍂 ';
+            font-size: 1.2em;
+        }
+
+        .config-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(152,251,152,0.9));
+            padding: 20px;
+            border-radius: 20px;
+            min-width: 280px;
+            display: none;
+            border: 3px solid rgba(45,80,22,0.3);
+            box-shadow: 0 10px 30px rgba(45,80,22,0.2);
+            color: #1a4d0a;
+        }
+
+        .config-panel h3 {
+            color: #1a4d0a;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .config-panel h3::before {
+            content: '⚙️🌿 ';
+        }
+
+        .config-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #98fb98, #90ee90);
+            border: 3px solid rgba(45,80,22,0.4);
+            color: #1a4d0a;
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            box-shadow: 0 6px 15px rgba(45,80,22,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .config-toggle:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 8px 20px rgba(45,80,22,0.3);
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #1a4d0a;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(45,80,22,0.3);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.9);
+            color: #1a4d0a;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #32cd32;
+            box-shadow: 0 0 10px rgba(50,205,50,0.3);
+        }
+
+        .form-group button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #32cd32, #98fb98);
+            color: #1a4d0a;
+            border: 2px solid rgba(45,80,22,0.3);
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .form-group button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(45,80,22,0.3);
+        }
+
+        .form-group button:last-child {
+            background: linear-gradient(135deg, #90ee90, #98fb98);
+        }
+
+        .inactive-message {
+            text-align: center;
+            font-size: 1.5em;
+            opacity: 0.8;
+            margin-top: 50px;
+            color: #2d5016;
+            background: rgba(255,255,255,0.6);
+            padding: 30px;
+            border-radius: 25px;
+            border: 3px solid rgba(45,80,22,0.2);
+            position: relative;
+        }
+
+        .inactive-message::before {
+            content: '🌙✨';
+            display: block;
+            font-size: 2em;
+            margin-bottom: 15px;
+            animation: twinkle 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.5; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1.1); }
+        }
+
+        /* Add some Totoro-style decorative elements */
+        .totoro-decoration {
+            position: fixed;
+            font-size: 3em;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .totoro-decoration.leaf1 {
+            top: 10%;
+            left: 5%;
+            animation: gentleSway 6s ease-in-out infinite;
+        }
+
+        .totoro-decoration.leaf2 {
+            top: 60%;
+            right: 10%;
+            animation: gentleSway 8s ease-in-out infinite reverse;
+        }
+
+        .totoro-decoration.acorn {
+            bottom: 20%;
+            left: 10%;
+            animation: gentleBounce 4s ease-in-out infinite;
+        }
+
+        @keyframes gentleSway {
+            0%, 100% { transform: rotate(-10deg) translateY(0px); }
+            50% { transform: rotate(10deg) translateY(-15px); }
+        }
+
+        @keyframes gentleBounce {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-20px) scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="totoro-decoration leaf1">🍃</div>
+    <div class="totoro-decoration leaf2">🌿</div>
+    <div class="totoro-decoration acorn">🌰</div>
+    
+    <button class="config-toggle" onclick="toggleConfig()">⚙️</button>
+    
+    <div class="config-panel" id="configPanel">
+        <h3>Forest Bus Configuration</h3>
+        <div class="form-group">
+            <label>Bus Stop Code:</label>
+            <input type="text" id="busStopCode" placeholder="e.g., 83139" value="83139">
+        </div>
+        <div class="form-group">
+            <label>Bus Stop Name:</label>
+            <input type="text" id="busStopName" placeholder="e.g., Bedok Interchange" value="Bedok Forest Station">
+        </div>
+        <div class="form-group">
+            <label>API Key (Optional):</label>
+            <input type="text" id="apiKey" placeholder="LTA DataMall API Key">
+        </div>
+        <div class="form-group">
+            <button onclick="updateConfig()">Update 🌱</button>
+            <button onclick="toggleConfig()" style="background: linear-gradient(135deg, #90ee90, #98fb98);">Close 🍃</button>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="time-display" id="timeDisplay"></div>
+        <div class="date-display" id="dateDisplay"></div>
+    </div>
+
+    <div id="mainContent">
+        <div id="busContent"></div>
+    </div>
+
+    <script>
+        let config = {
+            busStopCode: '83139',
+            busStopName: 'Bedok Forest Station',
+            apiKey: '',
+            updateInterval: 30000 // 30 seconds
+        };
+
+        let updateTimer;
+        let isActiveTime = false;
+
+        function updateDateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-SG', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+            const dateString = now.toLocaleDateString('en-SG', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            document.getElementById('timeDisplay').textContent = timeString;
+            document.getElementById('dateDisplay').textContent = dateString;
+
+            // Check if current time is in active range (8:30 PM to 9:15 AM)
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const currentMinutes = hours * 60 + minutes;
+            
+            // 8:30 PM = 20:30 = 1230 minutes, 9:15 AM = 09:15 = 555 minutes
+            const startTime = 20 * 60 + 30; // 8:30 PM
+            const endTime = 9 * 60 + 15;    // 9:15 AM
+            
+            isActiveTime = currentMinutes >= startTime || currentMinutes <= endTime;
+        }
+
+        async function fetchBusArrivals() {
+            if (!isActiveTime) {
+                document.getElementById('busContent').innerHTML = `
+                    <div class="inactive-message">
+                        Display is resting like Totoro<br>
+                        <small>Active hours: 8:30 PM - 9:15 AM</small>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                document.getElementById('busContent').innerHTML = '<div class="loading">Searching for forest buses...</div>';
+
+                // Mock data for demonstration - replace with actual API call
+                const mockData = {
+                    Services: [
+                        {
+                            ServiceNo: "2",
+                            NextBus: {
+                                EstimatedArrival: new Date(Date.now() + 3 * 60000).toISOString(),
+                                Load: "SEA",
+                                Feature: "WAB",
+                                Type: "DD"
+                            },
+                            NextBus2: {
+                                EstimatedArrival: new Date(Date.now() + 8 * 60000).toISOString(),
+                                Load: "SDA",
+                                Feature: "",
+                                Type: "SD"
+                            }
+                        },
+                        {
+                            ServiceNo: "24",
+                            NextBus: {
+                                EstimatedArrival: new Date(Date.now() + 5 * 60000).toISOString(),
+                                Load: "LSD",
+                                Feature: "WAB",
+                                Type: "SD"
+                            },
+                            NextBus2: {
+                                EstimatedArrival: new Date(Date.now() + 12 * 60000).toISOString(),
+                                Load: "SEA",
+                                Feature: "",
+                                Type: "SD"
+                            }
+                        },
+                        {
+                            ServiceNo: "38",
+                            NextBus: {
+                                EstimatedArrival: new Date(Date.now() + 1 * 60000).toISOString(),
+                                Load: "SDA",
+                                Feature: "",
+                                Type: "SD"
+                            },
+                            NextBus2: {
+                                EstimatedArrival: new Date(Date.now() + 15 * 60000).toISOString(),
+                                Load: "SEA",
+                                Feature: "WAB",
+                                Type: "DD"
+                            }
+                        }
+                    ]
+                };
+
+                displayBusArrivals(mockData);
+
+            } catch (error) {
+                document.getElementById('busContent').innerHTML = `
+                    <div class="error">
+                        Error in the enchanted forest<br>
+                        <small>${error.message}</small>
+                    </div>
+                `;
+            }
+        }
+
+        function displayBusArrivals(data) {
+            const busContent = document.getElementById('busContent');
+            
+            if (!data.Services || data.Services.length === 0) {
+                busContent.innerHTML = '<div class="loading">No forest spirits found...</div>';
+                return;
+            }
+
+            const busSection = document.createElement('div');
+            busSection.className = 'bus-stop-section';
+            
+            busSection.innerHTML = `
+                <div class="bus-stop-header">
+                    ${config.busStopName}
+                    <span class="bus-stop-code">${config.busStopCode}</span>
+                </div>
+                <div class="bus-list" id="busList"></div>
+            `;
+
+            const busList = busSection.querySelector('#busList');
+
+            data.Services.forEach(service => {
+                if (service.NextBus && service.NextBus.EstimatedArrival) {
+                    const busItem = createBusItem(service);
+                    busList.appendChild(busItem);
+                }
+            });
+
+            busContent.innerHTML = '';
+            busContent.appendChild(busSection);
+        }
+
+        function createBusItem(service) {
+            const busItem = document.createElement('div');
+            busItem.className = 'bus-item';
+
+            const now = new Date();
+            const arrivalTime = new Date(service.NextBus.EstimatedArrival);
+            const minutesUntilArrival = Math.round((arrivalTime - now) / (1000 * 60));
+
+            let arrivalText;
+            if (minutesUntilArrival <= 0) {
+                arrivalText = "Arriving";
+            } else if (minutesUntilArrival === 1) {
+                arrivalText = "1 min";
+            } else {
+                arrivalText = `${minutesUntilArrival} mins`;
+            }
+
+            const loadText = getLoadText(service.NextBus.Load);
+            const typeText = service.NextBus.Type === 'DD' ? 'Double Deck' : 'Single Deck';
+            const features = service.NextBus.Feature === 'WAB' ? ' • Wheelchair Accessible' : '';
+
+            let nextBusText = '';
+            if (service.NextBus2 && service.NextBus2.EstimatedArrival) {
+                const nextArrival = new Date(service.NextBus2.EstimatedArrival);
+                const nextMinutes = Math.round((nextArrival - now) / (1000 * 60));
+                nextBusText = ` • Next: ${nextMinutes} mins`;
+            }
+
+            busItem.innerHTML = `
+                <div class="bus-number">${service.ServiceNo}</div>
+                <div class="bus-info">
+                    <div class="arrival-time">${arrivalText}</div>
+                    <div class="arrival-details">${loadText} • ${typeText}${features}${nextBusText}</div>
+                </div>
+            `;
+
+            return busItem;
+        }
+
+        function getLoadText(load) {
+            switch(load) {
+                case 'SEA': return 'Seats Available';
+                case 'SDA': return 'Standing Available';
+                case 'LSD': return 'Limited Standing';
+                default: return 'Unknown';
+            }
+        }
+
+        function toggleConfig() {
+            const panel = document.getElementById('configPanel');
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function updateConfig() {
+            config.busStopCode = document.getElementById('busStopCode').value;
+            config.busStopName = document.getElementById('busStopName').value;
+            config.apiKey = document.getElementById('apiKey').value;
+            
+            // Save to localStorage for persistence
+            localStorage.setItem('busDisplayConfig', JSON.stringify(config));
+            
+            toggleConfig();
+            fetchBusArrivals();
+        }
+
+        function loadConfig() {
+            const saved = localStorage.getItem('busDisplayConfig');
+            if (saved) {
+                config = {...config, ...JSON.parse(saved)};
+                document.getElementById('busStopCode').value = config.busStopCode;
+                document.getElementById('busStopName').value = config.busStopName;
+                document.getElementById('apiKey').value = config.apiKey;
+            }
+        }
+
+        // Initialize the app
+        function init() {
+            loadConfig();
+            updateDateTime();
+            fetchBusArrivals();
+            
+            // Update time every second
+            setInterval(updateDateTime, 1000);
+            
+            // Update bus arrivals every 30 seconds
+            setInterval(fetchBusArrivals, config.updateInterval);
+        }
+
+        // Start the app when page loads
+        document.addEventListener('DOMContentLoaded', init);
+
+        // Prevent screen from sleeping on mobile devices
+        let wakeLock = null;
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                }
+            } catch (err) {
+                console.log('Wake lock not supported');
+            }
+        }
+        requestWakeLock();
+    </script>
+</body>
+</html>

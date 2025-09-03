@@ -1,94 +1,79 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Totoro Bus Arrival Display</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🌳 Totoro Bus Stop 🚌</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Comic Sans MS', 'Arial', sans-serif;
-            background: linear-gradient(135deg, #87ceeb 0%, #98fb98 30%, #90ee90 70%, #32cd32 100%);
-            background-size: 400% 400%;
-            animation: forestBreeze 20s ease-in-out infinite;
-            color: #2d5016;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
+            font-family: 'Comic Sans MS', Arial, sans-serif;
+            background: linear-gradient(135deg, #a8e6cf 0%, #7fcdcd 50%, #81c784 100%);
+            min-height: 100vh;
+            padding: 15px;
+            color: #2e7d32;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
             position: relative;
         }
 
-        @keyframes forestBreeze {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="80" r="15" fill="%23228b22" opacity="0.3"/><circle cx="80" cy="75" r="20" fill="%2332cd32" opacity="0.2"/><circle cx="60" cy="90" r="10" fill="%2390ee90" opacity="0.4"/><circle cx="30" cy="60" r="12" fill="%2398fb98" opacity="0.3"/></svg>') repeat;
+        /* Cute floating decorations */
+        .decoration {
+            position: fixed;
+            font-size: 2rem;
+            opacity: 0.3;
+            animation: float 6s ease-in-out infinite;
             pointer-events: none;
-            z-index: -1;
+            z-index: 1;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            position: relative;
-        }
-
-        .header::before {
-            content: '🌳';
-            position: absolute;
-            left: 20%;
-            top: -10px;
-            font-size: 2em;
-            animation: sway 3s ease-in-out infinite;
-        }
-
-        .header::after {
-            content: '🍃';
-            position: absolute;
-            right: 20%;
-            top: 20px;
-            font-size: 1.5em;
-            animation: float 4s ease-in-out infinite reverse;
-        }
-
-        @keyframes sway {
-            0%, 100% { transform: rotate(-5deg); }
-            50% { transform: rotate(5deg); }
-        }
+        .decoration:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .decoration:nth-child(2) { top: 20%; right: 15%; animation-delay: 2s; }
+        .decoration:nth-child(3) { bottom: 30%; left: 5%; animation-delay: 4s; }
+        .decoration:nth-child(4) { bottom: 10%; right: 10%; animation-delay: 1s; }
 
         @keyframes float {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(10deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
         }
 
-        .time-display {
-            font-size: 2.5em;
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .time {
+            font-size: 2.5rem;
             font-weight: bold;
+            color: #1b5e20;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(45,80,22,0.4);
-            color: #1a4d0a;
-            position: relative;
         }
 
-        .time-display::before {
-            content: '🚌';
-            margin-right: 15px;
+        .time::before {
+            content: '🚌 ';
             animation: bounce 2s infinite;
+        }
+
+        .date {
+            font-size: 1.1rem;
+            color: #388e3c;
+            opacity: 0.9;
         }
 
         @keyframes bounce {
@@ -97,87 +82,181 @@
             60% { transform: translateY(-5px); }
         }
 
-        .date-display {
-            font-size: 1.2em;
-            opacity: 0.8;
-            color: #2d5016;
+        /* Settings button */
+        .settings-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #81c784, #a5d6a7);
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            color: #1b5e20;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
         }
 
-        .bus-stop-section {
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(10px);
+        .settings-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        /* Settings panel */
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .settings-content {
+            background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            margin: 50px auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .settings-title {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #1b5e20;
+            margin-bottom: 25px;
+        }
+
+        .settings-title::before {
+            content: '🌿 ';
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #a5d6a7;
+            border-radius: 15px;
+            font-size: 1rem;
+            background: rgba(255,255,255,0.9);
+            color: #1b5e20;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4caf50;
+            box-shadow: 0 0 10px rgba(76,175,80,0.3);
+        }
+
+        .debug-info {
+            background: rgba(255,255,255,0.9);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4caf50, #81c784);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #a5d6a7, #c8e6c9);
+            color: #1b5e20;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        /* Bus stop section */
+        .bus-stop {
+            background: rgba(255,255,255,0.9);
             border-radius: 25px;
             padding: 25px;
             margin-bottom: 20px;
-            border: 3px solid rgba(45,80,22,0.3);
-            box-shadow: 0 8px 25px rgba(45,80,22,0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .bus-stop-section::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><text x="5" y="15" font-size="12" fill="%2390ee90" opacity="0.1">🌿</text><text x="35" y="35" font-size="10" fill="%2398fb98" opacity="0.1">🍀</text><text x="15" y="40" font-size="8" fill="%2332cd32" opacity="0.1">🌱</text></svg>') repeat;
-            animation: gentleMove 30s linear infinite;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        @keyframes gentleMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-50px, -50px); }
-        }
-
-        .bus-stop-section > * {
-            position: relative;
-            z-index: 1;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
         }
 
         .bus-stop-header {
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-bottom: 15px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
             gap: 10px;
-            color: #1a4d0a;
         }
 
-        .bus-stop-header::before {
-            content: '🌲';
-            font-size: 1.2em;
+        .bus-stop-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #1b5e20;
+        }
+
+        .bus-stop-name::before {
+            content: '🌲 ';
         }
 
         .bus-stop-code {
-            background: linear-gradient(135deg, #98fb98, #90ee90);
+            background: linear-gradient(135deg, #a5d6a7, #c8e6c9);
             padding: 8px 15px;
             border-radius: 20px;
-            font-size: 0.8em;
-            color: #1a4d0a;
-            border: 2px solid rgba(45,80,22,0.3);
-            box-shadow: 0 4px 8px rgba(45,80,22,0.1);
+            font-size: 0.9rem;
+            color: #1b5e20;
+            font-weight: bold;
         }
 
+        /* Bus items */
         .bus-list {
-            display: grid;
-            gap: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
         .bus-item {
-            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(144,238,144,0.3));
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(200,230,201,0.3));
             border-radius: 20px;
             padding: 20px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
-            border: 2px solid rgba(45,80,22,0.2);
-            box-shadow: 0 4px 15px rgba(45,80,22,0.1);
             position: relative;
             overflow: hidden;
         }
@@ -185,51 +264,35 @@
         .bus-item::before {
             content: '';
             position: absolute;
-            left: -20px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 10px;
-            height: 60%;
-            background: linear-gradient(to bottom, #32cd32, #98fb98);
-            border-radius: 5px;
-            transition: all 0.3s ease;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            background: linear-gradient(to bottom, #4caf50, #81c784);
+            border-radius: 0 3px 3px 0;
         }
 
         .bus-item:hover {
-            transform: scale(1.02) translateY(-2px);
-            box-shadow: 0 8px 25px rgba(45,80,22,0.2);
-        }
-
-        .bus-item:hover::before {
-            width: 15px;
-            left: -15px;
-        }
-
-        .bus-item:nth-child(even) {
-            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(152,251,152,0.3));
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
 
         .bus-number {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: #1a4d0a;
-            min-width: 80px;
-            background: linear-gradient(135deg, #ffd700, #ffed4a);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 2px 2px 4px rgba(45,80,22,0.3);
-            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 100px;
         }
 
         .bus-number::before {
             content: '🚍';
-            position: absolute;
-            left: -35px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.8em;
-            -webkit-text-fill-color: initial;
+            font-size: 1.5rem;
+        }
+
+        .bus-number-text {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ff6f00;
         }
 
         .bus-info {
@@ -238,500 +301,644 @@
         }
 
         .arrival-time {
-            font-size: 1.4em;
+            font-size: 1.4rem;
             font-weight: bold;
+            color: #1b5e20;
             margin-bottom: 5px;
-            color: #1a4d0a;
-            position: relative;
         }
 
         .arrival-details {
-            font-size: 0.9em;
-            opacity: 0.7;
-            color: #2d5016;
+            font-size: 0.9rem;
+            color: #388e3c;
+            opacity: 0.8;
+        }
+
+        /* Loading and error states */
+        .loading, .error, .inactive {
+            text-align: center;
+            padding: 40px 20px;
+            border-radius: 20px;
+            margin: 20px 0;
         }
 
         .loading {
-            text-align: center;
-            font-size: 1.2em;
-            opacity: 0.7;
-            color: #2d5016;
-            position: relative;
+            background: rgba(255,255,255,0.8);
+            color: #2e7d32;
         }
 
         .loading::before {
-            content: '🌿 ';
+            content: '🌿';
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 15px;
             animation: spin 2s linear infinite;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .error {
-            background: linear-gradient(135deg, rgba(255,182,193,0.8), rgba(255,160,122,0.6));
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            color: #8b0000;
-            border: 2px solid rgba(139,0,0,0.3);
+            background: rgba(255,205,210,0.8);
+            color: #c62828;
         }
 
         .error::before {
-            content: '🍂 ';
-            font-size: 1.2em;
-        }
-
-        .config-panel {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(152,251,152,0.9));
-            padding: 20px;
-            border-radius: 20px;
-            min-width: 280px;
-            display: none;
-            border: 3px solid rgba(45,80,22,0.3);
-            box-shadow: 0 10px 30px rgba(45,80,22,0.2);
-            color: #1a4d0a;
-        }
-
-        .config-panel h3 {
-            color: #1a4d0a;
+            content: '🍂';
+            font-size: 2rem;
+            display: block;
             margin-bottom: 15px;
-            text-align: center;
         }
 
-        .config-panel h3::before {
-            content: '⚙️🌿 ';
+        .inactive {
+            background: rgba(255,255,255,0.8);
+            color: #2e7d32;
         }
 
-        .config-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #98fb98, #90ee90);
-            border: 3px solid rgba(45,80,22,0.4);
-            color: #1a4d0a;
-            padding: 12px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2em;
-            box-shadow: 0 6px 15px rgba(45,80,22,0.2);
-            transition: all 0.3s ease;
-        }
-
-        .config-toggle:hover {
-            transform: scale(1.1) rotate(90deg);
-            box-shadow: 0 8px 20px rgba(45,80,22,0.3);
-        }
-
-        .form-group {
-            margin-bottom: 10px;
-        }
-
-        .form-group label {
+        .inactive::before {
+            content: '🌙';
+            font-size: 2rem;
             display: block;
-            margin-bottom: 8px;
-            font-size: 0.9em;
-            font-weight: bold;
-            color: #1a4d0a;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid rgba(45,80,22,0.3);
-            border-radius: 10px;
-            background: rgba(255,255,255,0.9);
-            color: #1a4d0a;
-            font-size: 0.9em;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #32cd32;
-            box-shadow: 0 0 10px rgba(50,205,50,0.3);
-        }
-
-        .form-group button {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #32cd32, #98fb98);
-            color: #1a4d0a;
-            border: 2px solid rgba(45,80,22,0.3);
-            border-radius: 10px;
-            cursor: pointer;
-            margin-top: 12px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            font-size: 0.9em;
-        }
-
-        .form-group button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(45,80,22,0.3);
-        }
-
-        .form-group button:last-child {
-            background: linear-gradient(135deg, #90ee90, #98fb98);
-        }
-
-        .inactive-message {
-            text-align: center;
-            font-size: 1.5em;
-            opacity: 0.8;
-            margin-top: 50px;
-            color: #2d5016;
-            background: rgba(255,255,255,0.6);
-            padding: 30px;
-            border-radius: 25px;
-            border: 3px solid rgba(45,80,22,0.2);
-            position: relative;
-        }
-
-        .inactive-message::before {
-            content: '🌙✨';
-            display: block;
-            font-size: 2em;
             margin-bottom: 15px;
             animation: twinkle 2s ease-in-out infinite alternate;
         }
 
         @keyframes twinkle {
-            0% { opacity: 0.5; transform: scale(0.9); }
-            100% { opacity: 1; transform: scale(1.1); }
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
         }
 
-        /* Add some Totoro-style decorative elements */
-        .totoro-decoration {
-            position: fixed;
-            font-size: 3em;
-            opacity: 0.1;
-            pointer-events: none;
-            z-index: -1;
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .time {
+                font-size: 2rem;
+            }
+
+            .settings-content {
+                margin: 20px auto;
+                padding: 25px;
+            }
+
+            .bus-item {
+                padding: 15px;
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .bus-info {
+                text-align: center;
+            }
+
+            .bus-stop-header {
+                flex-direction: column;
+                text-align: center;
+            }
         }
 
-        .totoro-decoration.leaf1 {
-            top: 10%;
-            left: 5%;
-            animation: gentleSway 6s ease-in-out infinite;
-        }
+        @media (max-width: 480px) {
+            .time {
+                font-size: 1.5rem;
+            }
 
-        .totoro-decoration.leaf2 {
-            top: 60%;
-            right: 10%;
-            animation: gentleSway 8s ease-in-out infinite reverse;
-        }
+            .bus-number-text {
+                font-size: 1.5rem;
+            }
 
-        .totoro-decoration.acorn {
-            bottom: 20%;
-            left: 10%;
-            animation: gentleBounce 4s ease-in-out infinite;
-        }
-
-        @keyframes gentleSway {
-            0%, 100% { transform: rotate(-10deg) translateY(0px); }
-            50% { transform: rotate(10deg) translateY(-15px); }
-        }
-
-        @keyframes gentleBounce {
-            0%, 100% { transform: translateY(0px) scale(1); }
-            50% { transform: translateY(-20px) scale(1.1); }
+            .arrival-time {
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="totoro-decoration leaf1">🍃</div>
-    <div class="totoro-decoration leaf2">🌿</div>
-    <div class="totoro-decoration acorn">🌰</div>
-    
-    <button class="config-toggle" onclick="toggleConfig()">⚙️</button>
-    
-    <div class="config-panel" id="configPanel">
-        <h3>Forest Bus Configuration</h3>
-        <div class="form-group">
-            <label>Bus Stop Code:</label>
-            <input type="text" id="busStopCode" placeholder="e.g., 83139" value="83139">
-        </div>
-        <div class="form-group">
-            <label>Bus Stop Name:</label>
-            <input type="text" id="busStopName" placeholder="e.g., Bedok Interchange" value="Bedok Forest Station">
-        </div>
-        <div class="form-group">
-            <label>API Key (Optional):</label>
-            <input type="text" id="apiKey" placeholder="LTA DataMall API Key">
-        </div>
-        <div class="form-group">
-            <button onclick="updateConfig()">Update 🌱</button>
-            <button onclick="toggleConfig()" style="background: linear-gradient(135deg, #90ee90, #98fb98);">Close 🍃</button>
-        </div>
-    </div>
+    <!-- Floating decorations -->
+    <div class="decoration">🍃</div>
+    <div class="decoration">🌿</div>
+    <div class="decoration">🌰</div>
+    <div class="decoration">🍀</div>
 
-    <div class="header">
-        <div class="time-display" id="timeDisplay"></div>
-        <div class="date-display" id="dateDisplay"></div>
-    </div>
+    <div class="container">
+        <!-- Settings Button -->
+        <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
 
-    <div id="mainContent">
-        <div id="busContent"></div>
+        <!-- Settings Panel -->
+        <div class="settings-panel" id="settingsPanel" onclick="closeSettings(event)">
+            <div class="settings-content" onclick="event.stopPropagation()">
+                <h3 class="settings-title">Forest Bus Settings</h3>
+                <div class="form-group">
+                    <label>Bus Stop Code:</label>
+                    <input type="text" id="busStopCode" placeholder="e.g., 83139">
+                </div>
+                <div class="form-group">
+                    <label>Bus Stop Name:</label>
+                    <input type="text" id="busStopName" placeholder="e.g., My Bus Stop">
+                </div>
+                <div class="form-group">
+                    <label>API Key:</label>
+                    <input type="password" id="apiKey" placeholder="LTA DataMall API Key">
+                </div>
+                <div class="debug-info" id="debugInfo">
+                    Debug info will appear here...
+                </div>
+                <button class="btn btn-primary" onclick="updateSettings()">Save Changes 🌱</button>
+                <button class="btn btn-secondary" onclick="testAPI()">Test API Connection 🔍</button>
+                <button class="btn btn-secondary" onclick="toggleSettings()">Close 🍃</button>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="time" id="currentTime"></div>
+            <div class="date" id="currentDate"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent"></div>
     </div>
 
     <script>
+        // Configuration
         let config = {
-            busStopCode: '83139',
-            busStopName: 'Bedok Forest Station',
-            apiKey: '',
-            updateInterval: 30000 // 30 seconds
+            busStopCode: '83139', // Default bus stop code
+            busStopName: 'Totoro Forest Station', // Default bus stop name
+            apiKey: '', // API Key will be loaded from localStorage or entered by user
+            updateInterval: 30000 // Update every 30 seconds
         };
 
-        let updateTimer;
-        let isActiveTime = false;
+        let isActiveTime = true; // Set to true for continuous operation during testing
+        let updateInterval;
 
+        // Initialize app
+        function init() {
+            loadConfig();
+            updateDateTime();
+            fetchBusData();
+            
+            // Update time every second
+            setInterval(updateDateTime, 1000);
+            
+            // Update bus data periodically
+            updateInterval = setInterval(fetchBusData, config.updateInterval);
+
+            // Prevent screen sleep
+            requestWakeLock();
+        }
+
+        // Debug logging function
+        function debugLog(message) {
+            const debugInfo = document.getElementById('debugInfo');
+            const timestamp = new Date().toLocaleTimeString();
+            debugInfo.innerHTML += `[${timestamp}] ${message}<br>`;
+            // Auto-scroll to the bottom
+            debugInfo.scrollTop = debugInfo.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        // Load saved configuration from localStorage
+        function loadConfig() {
+            const saved = localStorage.getItem('totoroBusConfig');
+            if (saved) {
+                try {
+                    const loadedConfig = JSON.parse(saved);
+                    // Merge loaded config with defaults, prioritizing loaded values
+                    config = {...config, ...loadedConfig};
+                    document.getElementById('busStopCode').value = config.busStopCode;
+                    document.getElementById('busStopName').value = config.busStopName;
+                    document.getElementById('apiKey').value = config.apiKey;
+                    debugLog(`Config loaded: StopCode=${config.busStopCode}, Interval=${config.updateInterval}ms`);
+                } catch (e) {
+                    debugLog(`Error loading config: ${e.message}`);
+                    // If loading fails, still set defaults from the input fields
+                    updateConfigFromInputs();
+                }
+            } else {
+                // If no config is saved, use default values from HTML and save them
+                updateConfigFromInputs();
+                saveConfig();
+            }
+        }
+
+        // Save configuration to localStorage
+        function saveConfig() {
+            try {
+                localStorage.setItem('totoroBusConfig', JSON.stringify(config));
+                debugLog('Config saved successfully');
+            } catch (e) {
+                debugLog(`Error saving config: ${e.message}`);
+            }
+        }
+
+        // Update config object from input fields and save
+        function updateConfigFromInputs() {
+            config.busStopCode = document.getElementById('busStopCode').value || '83139'; // Ensure default if empty
+            config.busStopName = document.getElementById('busStopName').value || 'Totoro Forest Station'; // Ensure default if empty
+            config.apiKey = document.getElementById('apiKey').value;
+            saveConfig(); // Save after updating
+        }
+
+        // Update date and time display
         function updateDateTime() {
             const now = new Date();
-            const timeString = now.toLocaleTimeString('en-SG', {
+            const time = now.toLocaleTimeString('en-SG', {
                 hour: '2-digit',
                 minute: '2-digit',
                 second: '2-digit',
-                hour12: false
+                hour12: false // Use 24-hour format
             });
-            const dateString = now.toLocaleDateString('en-SG', {
+            const date = now.toLocaleDateString('en-SG', {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
             });
 
-            document.getElementById('timeDisplay').textContent = timeString;
-            document.getElementById('dateDisplay').textContent = dateString;
+            document.getElementById('currentTime').textContent = time;
+            document.getElementById('currentDate').textContent = date;
 
-            // Check if current time is in active range (8:30 PM to 9:15 AM)
+            // Original time check code is commented out for continuous display
+            /*
             const hours = now.getHours();
             const minutes = now.getMinutes();
             const currentMinutes = hours * 60 + minutes;
-            
-            // 8:30 PM = 20:30 = 1230 minutes, 9:15 AM = 09:15 = 555 minutes
             const startTime = 20 * 60 + 30; // 8:30 PM
             const endTime = 9 * 60 + 15;    // 9:15 AM
             
             isActiveTime = currentMinutes >= startTime || currentMinutes <= endTime;
+            */
         }
 
-        async function fetchBusArrivals() {
-            if (!isActiveTime) {
-                document.getElementById('busContent').innerHTML = `
-                    <div class="inactive-message">
-                        Display is resting like Totoro<br>
-                        <small>Active hours: 8:30 PM - 9:15 AM</small>
-                    </div>
-                `;
+        // Test API connection function
+        async function testAPI() {
+            debugLog('Testing API connection...');
+            
+            const testApiKey = document.getElementById('apiKey').value;
+            const testBusStopCode = document.getElementById('busStopCode').value;
+
+            if (!testApiKey || !testApiKey.trim()) {
+                debugLog('ERROR: No API key provided in settings.');
+                alert("Please enter your LTA DataMall API Key.");
+                return;
+            }
+
+            if (!testBusStopCode || !testBusStopCode.trim()) {
+                debugLog('ERROR: No bus stop code provided in settings.');
+                alert("Please enter a Bus Stop Code.");
                 return;
             }
 
             try {
-                document.getElementById('busContent').innerHTML = '<div class="loading">Searching for forest buses...</div>';
+                const url = `https://datamall2.mytransport.sg/ltaodataservice/BusArrivalv2?BusStopCode=${testBusStopCode}`;
+                debugLog(`Attempting to fetch from: ${url}`);
+                debugLog(`Using API Key: ${testApiKey.substring(0, 8)}...`);
 
-                // Mock data for demonstration - replace with actual API call
-                const mockData = {
-                    Services: [
-                        {
-                            ServiceNo: "2",
-                            NextBus: {
-                                EstimatedArrival: new Date(Date.now() + 3 * 60000).toISOString(),
-                                Load: "SEA",
-                                Feature: "WAB",
-                                Type: "DD"
-                            },
-                            NextBus2: {
-                                EstimatedArrival: new Date(Date.now() + 8 * 60000).toISOString(),
-                                Load: "SDA",
-                                Feature: "",
-                                Type: "SD"
-                            }
-                        },
-                        {
-                            ServiceNo: "24",
-                            NextBus: {
-                                EstimatedArrival: new Date(Date.now() + 5 * 60000).toISOString(),
-                                Load: "LSD",
-                                Feature: "WAB",
-                                Type: "SD"
-                            },
-                            NextBus2: {
-                                EstimatedArrival: new Date(Date.now() + 12 * 60000).toISOString(),
-                                Load: "SEA",
-                                Feature: "",
-                                Type: "SD"
-                            }
-                        },
-                        {
-                            ServiceNo: "38",
-                            NextBus: {
-                                EstimatedArrival: new Date(Date.now() + 1 * 60000).toISOString(),
-                                Load: "SDA",
-                                Feature: "",
-                                Type: "SD"
-                            },
-                            NextBus2: {
-                                EstimatedArrival: new Date(Date.now() + 15 * 60000).toISOString(),
-                                Load: "SEA",
-                                Feature: "WAB",
-                                Type: "DD"
-                            }
-                        }
-                    ]
-                };
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'AccountKey': testApiKey,
+                        'accept': 'application/json'
+                    }
+                });
 
-                displayBusArrivals(mockData);
+                debugLog(`Response status: ${response.status} ${response.statusText}`);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    debugLog(`API Response Error: ${response.status} - ${errorText}`); // Log full error
+                    throw new Error(`API Error: ${response.status} - ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                debugLog(`API Response received. Number of services found: ${data.Services ? data.Services.length : 0}`);
+                
+                if (data.Services && data.Services.length > 0) {
+                    debugLog('SUCCESS: API connection test passed!');
+                    alert('API connection successful!');
+                } else {
+                    debugLog('WARNING: No bus services found for this stop, but API call was successful.');
+                    alert('API connection successful, but no buses found for this stop.');
+                }
 
             } catch (error) {
-                document.getElementById('busContent').innerHTML = `
+                debugLog(`TEST ERROR: ${error.message}`);
+                console.error('API Test Error:', error);
+                
+                // More specific error messages for testing
+                let testErrorMsg = error.message;
+                if (error.message.includes('Failed to fetch')) {
+                    testErrorMsg = 'Network error. Check your internet connection.';
+                } else if (error.message.includes('401')) { // Unauthorized
+                    testErrorMsg = 'Authentication failed. Please verify your API Key.';
+                } else if (error.message.includes('404')) { // Not Found
+                    testErrorMsg = 'Resource not found. Check the Bus Stop Code.';
+                } else if (error.message.includes('429')) { // Rate limit
+                    testErrorMsg = 'API rate limit exceeded. Please wait and try again.';
+                } else if (error.message.includes('CORS')) {
+                    testErrorMsg = 'CORS error: Browser is blocking the request. This is expected when testing directly without a proxy or server.';
+                }
+                alert(`API Test Failed: ${testErrorMsg}`);
+            }
+        }
+
+        // Fetch bus arrival data with improved error handling and CORS proxy
+        async function fetchBusData() {
+            const content = document.getElementById('mainContent');
+
+            // Keep the display logic here but fetch data regardless of isActiveTime for now
+            // If you want to hide data outside active hours, re-implement the isActiveTime logic
+            // if (!isActiveTime) {
+            //     content.innerHTML = `
+            //         <div class="inactive">
+            //             Totoro is sleeping...<br>
+            //             <small>Active: 8:30 PM - 9:15 AM</small>
+            //         </div>
+            //     `;
+            //     return;
+            // }
+
+            try {
+                content.innerHTML = '<div class="loading">Looking for forest buses...</div>';
+
+                let data;
+                // Ensure we have a valid API key and bus stop code before attempting API calls
+                if (config.apiKey && config.apiKey.trim() && config.busStopCode.trim()) {
+                    
+                    debugLog('Attempting real API call with API Key...');
+                    
+                    // Use a CORS proxy to bypass browser restrictions
+                    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+                    const targetUrl = `https://datamall2.mytransport.sg/ltaodataservice/BusArrivalv2?BusStopCode=${config.busStopCode}`;
+                    
+                    try {
+                        content.innerHTML = '<div class="loading">Fetching from proxy...</div>'; // Update loading state
+                        debugLog(`Making request via proxy: ${proxyUrl + targetUrl}`);
+
+                        const response = await fetch(proxyUrl + targetUrl, {
+                            method: 'GET',
+                            headers: {
+                                'AccountKey': config.apiKey,
+                                'accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest' // Often required by proxies
+                            }
+                        });
+
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            debugLog(`Proxy API Error: ${response.status} - ${errorText}`);
+                            // If proxy returns an error, throw it to trigger fallback or final error display
+                            throw new Error(`Proxy Error: ${response.status} - ${response.statusText}`);
+                        }
+
+                        data = await response.json();
+                        debugLog('API call through proxy successful.');
+                        
+                    } catch (proxyError) {
+                        console.error("Proxy Error:", proxyError);
+                        debugLog('CORS proxy failed. Attempting direct API call (may fail due to CORS)...');
+                        
+                        // Fallback to direct API call (this might still be blocked by browser CORS policy)
+                        try {
+                            content.innerHTML = '<div class="loading">Fetching directly (if proxy fails)...</div>'; // Update loading state
+                            debugLog(`Making direct request: ${targetUrl}`);
+
+                            const directResponse = await fetch(targetUrl, {
+                                method: 'GET',
+                                headers: {
+                                    'AccountKey': config.apiKey,
+                                    'accept': 'application/json'
+                                }
+                            });
+
+                            if (!directResponse.ok) {
+                                const errorText = await directResponse.text();
+                                debugLog(`Direct API Error: ${directResponse.status} - ${errorText}`);
+                                throw new Error(`Direct API Error: ${directResponse.status} - ${directResponse.statusText}`);
+                            }
+
+                            data = await directResponse.json();
+                            debugLog('Direct API call successful.');
+                        } catch (directError) {
+                            console.error("Direct API Error:", directError);
+                            // If both proxy and direct fail, this is the final error
+                            throw new Error(`Fetch Failed: ${directError.message}. If you see CORS errors, the API is likely blocked by your browser.`);
+                        }
+                    }
+                    
+                } else {
+                    debugLog('No API key or Bus Stop Code provided. Displaying mock data.');
+                    // Mock data if API key or bus stop code is missing
+                    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+                    data = getMockData();
+                }
+
+                displayBusData(data);
+
+            } catch (error) {
+                debugLog(`Overall fetch error: ${error.message}`);
+                console.error('Fetch Error:', error);
+                
+                let errorMsg = error.message;
+                // Provide more user-friendly error messages
+                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                    errorMsg = 'Network error. Please check your internet connection.';
+                } else if (error.message.includes('CORS')) {
+                    errorMsg = 'CORS error. The API is blocked by browser security. Use the "Test API Connection" button to confirm.';
+                } else if (error.message.includes('401')) { // Unauthorized
+                    errorMsg = 'Authentication failed. Please check your API Key in settings.';
+                } else if (error.message.includes('404')) { // Not Found
+                    errorMsg = 'Resource not found. Check the Bus Stop Code in settings.';
+                } else if (error.message.includes('429')) { // Rate limit
+                    errorMsg = 'API rate limit exceeded. Please try again later.';
+                }
+                
+                content.innerHTML = `
                     <div class="error">
-                        Error in the enchanted forest<br>
-                        <small>${error.message}</small>
+                        Oops! Forest spirits are hiding<br>
+                        <small>${errorMsg}</small><br>
+                        <small>Open settings to check API key and bus stop code.</small>
                     </div>
                 `;
             }
         }
 
-        function displayBusArrivals(data) {
-            const busContent = document.getElementById('busContent');
-            
-            if (!data.Services || data.Services.length === 0) {
-                busContent.innerHTML = '<div class="loading">No forest spirits found...</div>';
+        // Display the fetched bus data on the page
+        function displayBusData(data) {
+            const content = document.getElementById('mainContent');
+
+            if (!data || !data.Services || data.Services.length === 0) {
+                content.innerHTML = '<div class="loading">No buses in the forest right now...</div>';
+                debugLog('No bus services found in the API response.');
                 return;
             }
 
-            const busSection = document.createElement('div');
-            busSection.className = 'bus-stop-section';
+            debugLog(`Displaying ${data.Services.length} bus services.`);
             
-            busSection.innerHTML = `
-                <div class="bus-stop-header">
-                    ${config.busStopName}
-                    <span class="bus-stop-code">${config.busStopCode}</span>
-                </div>
-                <div class="bus-list" id="busList"></div>
-            `;
+            const busStopElement = document.createElement('div');
+            busStopElement.className = 'bus-stop';
 
-            const busList = busSection.querySelector('#busList');
-
+            let busItemsHtml = '';
+            // Filter for buses that have arrival data and create HTML for each
             data.Services.forEach(service => {
                 if (service.NextBus && service.NextBus.EstimatedArrival) {
-                    const busItem = createBusItem(service);
-                    busList.appendChild(busItem);
+                    busItemsHtml += createBusItemHtml(service);
                 }
             });
 
-            busContent.innerHTML = '';
-            busContent.appendChild(busSection);
-        }
-
-        function createBusItem(service) {
-            const busItem = document.createElement('div');
-            busItem.className = 'bus-item';
-
-            const now = new Date();
-            const arrivalTime = new Date(service.NextBus.EstimatedArrival);
-            const minutesUntilArrival = Math.round((arrivalTime - now) / (1000 * 60));
-
-            let arrivalText;
-            if (minutesUntilArrival <= 0) {
-                arrivalText = "Arriving";
-            } else if (minutesUntilArrival === 1) {
-                arrivalText = "1 min";
-            } else {
-                arrivalText = `${minutesUntilArrival} mins`;
-            }
-
-            const loadText = getLoadText(service.NextBus.Load);
-            const typeText = service.NextBus.Type === 'DD' ? 'Double Deck' : 'Single Deck';
-            const features = service.NextBus.Feature === 'WAB' ? ' • Wheelchair Accessible' : '';
-
-            let nextBusText = '';
-            if (service.NextBus2 && service.NextBus2.EstimatedArrival) {
-                const nextArrival = new Date(service.NextBus2.EstimatedArrival);
-                const nextMinutes = Math.round((nextArrival - now) / (1000 * 60));
-                nextBusText = ` • Next: ${nextMinutes} mins`;
-            }
-
-            busItem.innerHTML = `
-                <div class="bus-number">${service.ServiceNo}</div>
-                <div class="bus-info">
-                    <div class="arrival-time">${arrivalText}</div>
-                    <div class="arrival-details">${loadText} • ${typeText}${features}${nextBusText}</div>
+            busStopElement.innerHTML = `
+                <div class="bus-stop-header">
+                    <div class="bus-stop-name">${config.busStopName}</div>
+                    <div class="bus-stop-code">${config.busStopCode}</div>
+                </div>
+                <div class="bus-list">
+                    ${busItemsHtml}
                 </div>
             `;
 
-            return busItem;
+            content.innerHTML = ''; // Clear previous content
+            content.appendChild(busStopElement);
         }
 
-        function getLoadText(load) {
+        // Create HTML string for a single bus item
+        function createBusItemHtml(service) {
+            const now = new Date();
+            const arrivalTime = new Date(service.NextBus.EstimatedArrival);
+            const minutes = Math.round((arrivalTime - now) / (1000 * 60));
+
+            let arrivalText = 'Arriving';
+            if (minutes > 0) {
+                arrivalText = minutes === 1 ? '1 min' : `${minutes} mins`;
+            } else if (minutes === 0) {
+                arrivalText = 'Arriving Now';
+            } else {
+                arrivalText = 'Due'; // For times in the past (shouldn't happen with live data)
+            }
+
+            const load = getLoadDescription(service.NextBus.Load);
+            const type = service.NextBus.Type === 'DD' ? 'Double Deck' : 'Single Deck';
+            const wheelchairAccessible = service.NextBus.Feature === 'WAB' ? ' • ♿' : '';
+
+            let nextBusInfo = '';
+            if (service.NextBus2 && service.NextBus2.EstimatedArrival) {
+                const nextArrivalTime = new Date(service.NextBus2.EstimatedArrival);
+                const nextMinutes = Math.round((nextArrivalTime - now) / (1000 * 60));
+                nextBusInfo = ` • Next: ${nextMinutes} min${nextMinutes !== 1 ? 's' : ''}`;
+            }
+
+            return `
+                <div class="bus-item">
+                    <div class="bus-number">
+                        <div class="bus-number-text">${service.ServiceNo}</div>
+                    </div>
+                    <div class="bus-info">
+                        <div class="arrival-time">${arrivalText}</div>
+                        <div class="arrival-details">${load} • ${type}${wheelchairAccessible}${nextBusInfo}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Get human-readable description for bus load
+        function getLoadDescription(load) {
             switch(load) {
                 case 'SEA': return 'Seats Available';
                 case 'SDA': return 'Standing Available';
                 case 'LSD': return 'Limited Standing';
-                default: return 'Unknown';
+                default: return 'Unknown Load'; // Handle unexpected values
             }
         }
 
-        function toggleConfig() {
-            const panel = document.getElementById('configPanel');
+        // Generate mock data for testing when no API key is available
+        function getMockData() {
+            // Simulate data for a few buses
+            const now = Date.now();
+            return {
+                Services: [
+                    {
+                        ServiceNo: "2",
+                        NextBus: {
+                            EstimatedArrival: new Date(now + 3 * 60000).toISOString(), // Arrives in 3 minutes
+                            Load: "SEA", // Seats Available
+                            Feature: "WAB", // Wheelchair Accessible
+                            Type: "DD" // Double Deck
+                        },
+                        NextBus2: {
+                            EstimatedArrival: new Date(now + 8 * 60000).toISOString(), // Arrives in 8 minutes
+                            Load: "SDA", // Standing Available
+                            Feature: "", // Not Wheelchair Accessible
+                            Type: "SD" // Single Deck
+                        }
+                    },
+                    {
+                        ServiceNo: "24",
+                        NextBus: {
+                            EstimatedArrival: new Date(now + 5 * 60000).toISOString(), // Arrives in 5 minutes
+                            Load: "LSD", // Limited Standing
+                            Feature: "",
+                            Type: "SD"
+                        }
+                    },
+                    {
+                        ServiceNo: "38",
+                        NextBus: {
+                            EstimatedArrival: new Date(now + 1 * 60000).toISOString(), // Arrives in 1 minute
+                            Load: "SDA",
+                            Feature: "WAB",
+                            Type: "SD"
+                        }
+                    }
+                ]
+            };
+        }
+
+        // Settings Panel Functions
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
             panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function updateConfig() {
-            config.busStopCode = document.getElementById('busStopCode').value;
-            config.busStopName = document.getElementById('busStopName').value;
-            config.apiKey = document.getElementById('apiKey').value;
-            
-            // Save to localStorage for persistence
-            localStorage.setItem('busDisplayConfig', JSON.stringify(config));
-            
-            toggleConfig();
-            fetchBusArrivals();
-        }
-
-        function loadConfig() {
-            const saved = localStorage.getItem('busDisplayConfig');
-            if (saved) {
-                config = {...config, ...JSON.parse(saved)};
+            // When opening, ensure fields show current config
+            if (panel.style.display === 'block') {
                 document.getElementById('busStopCode').value = config.busStopCode;
                 document.getElementById('busStopName').value = config.busStopName;
                 document.getElementById('apiKey').value = config.apiKey;
             }
         }
 
-        // Initialize the app
-        function init() {
-            loadConfig();
-            updateDateTime();
-            fetchBusArrivals();
-            
-            // Update time every second
-            setInterval(updateDateTime, 1000);
-            
-            // Update bus arrivals every 30 seconds
-            setInterval(fetchBusArrivals, config.updateInterval);
+        function closeSettings(event) {
+            // Close panel if clicked outside of settings content
+            if (event.target === event.currentTarget) {
+                toggleSettings();
+            }
         }
 
-        // Start the app when page loads
-        document.addEventListener('DOMContentLoaded', init);
+        function updateSettings() {
+            // Update config object from inputs and save it
+            updateConfigFromInputs(); 
+            toggleSettings(); // Close the settings panel
+            debugLog('Settings updated. Fetching new data...');
+            fetchBusData(); // Refresh data with new settings
+        }
 
-        // Prevent screen from sleeping on mobile devices
-        let wakeLock = null;
+        // Prevent screen from sleeping (especially useful on mobile devices)
         async function requestWakeLock() {
             try {
                 if ('wakeLock' in navigator) {
-                    wakeLock = await navigator.wakeLock.request('screen');
+                    await navigator.wakeLock.request('screen');
+                    debugLog('Screen wake lock acquired.');
+                } else {
+                    debugLog('Wake lock not supported by this browser.');
                 }
             } catch (err) {
-                console.log('Wake lock not supported');
+                console.error('Wake lock request failed:', err);
+                debugLog(`Wake lock request failed: ${err.message}`);
             }
         }
-        requestWakeLock();
+
+        // Initialize the application when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>

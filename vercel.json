@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/lta.js", "use": "@vercel/node" },
+    { "src": "singapore_bus_display.html", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/lta", "dest": "/api/lta.js" },
+    { "src": "/(.*)", "dest": "/singapore_bus_display.html" }
+  ]
+}

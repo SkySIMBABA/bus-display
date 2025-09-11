@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🌳 Totoro Bus Stop 🚌</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', Arial, sans-serif;
+            background: linear-gradient(135deg, #a8e6cf 0%, #7fcdcd 50%, #81c784 100%);
+            min-height: 100vh;
+            padding: 15px;
+            color: #2e7d32;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Cute floating decorations */
+        .decoration {
+            position: fixed;
+            font-size: 2rem;
+            opacity: 0.3;
+            animation: float 6s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .decoration:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .decoration:nth-child(2) { top: 20%; right: 15%; animation-delay: 2s; }
+        .decoration:nth-child(3) { bottom: 30%; left: 5%; animation-delay: 4s; }
+        .decoration:nth-child(4) { bottom: 10%; right: 10%; animation-delay: 1s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .time {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1b5e20;
+            margin-bottom: 10px;
+        }
+
+        .time::before {
+            content: '🚌 ';
+            animation: bounce 2s infinite;
+        }
+
+        .date {
+            font-size: 1.1rem;
+            color: #388e3c;
+            opacity: 0.9;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        /* Settings button */
+        .settings-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #81c784, #a5d6a7);
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            color: #1b5e20;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .settings-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        /* Settings panel */
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .settings-content {
+            background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            margin: 50px auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .settings-title {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #1b5e20;
+            margin-bottom: 25px;
+        }
+
+        .settings-title::before {
+            content: '🌿 ';
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #a5d6a7;
+            border-radius: 15px;
+            font-size: 1rem;
+            background: rgba(255,255,255,0.9);
+            color: #1b5e20;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4caf50;
+            box-shadow: 0 0 10px rgba(76,175,80,0.3);
+        }
+
+        .debug-info {
+            background: rgba(255,255,255,0.9);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4caf50, #81c784);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #a5d6a7, #c8e6c9);
+            color: #1b5e20;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        /* Bus stop section */
+        .bus-stop {
+            background: rgba(255,255,255,0.9);
+            border-radius: 25px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .bus-stop-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .bus-stop-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #1b5e20;
+        }
+
+        .bus-stop-name::before {
+            content: '🌲 ';
+        }
+
+        .bus-stop-code {
+            background: linear-gradient(135deg, #a5d6a7, #c8e6c9);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #1b5e20;
+            font-weight: bold;
+        }
+
+        /* Bus items */
+        .bus-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .bus-item {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(200,230,201,0.3));
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bus-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            background: linear-gradient(to bottom, #4caf50, #81c784);
+            border-radius: 0 3px 3px 0;
+        }
+
+        .bus-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .bus-number {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 100px;
+        }
+
+        .bus-number::before {
+            content: '🚍';
+            font-size: 1.5rem;
+        }
+
+        .bus-number-text {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ff6f00;
+        }
+
+        .bus-info {
+            flex: 1;
+            text-align: right;
+        }
+
+        .arrival-time {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #1b5e20;
+            margin-bottom: 5px;
+        }
+
+        .arrival-details {
+            font-size: 0.9rem;
+            color: #388e3c;
+            opacity: 0.8;
+        }
+
+        /* Loading and error states */
+        .loading, .error, .inactive {
+            text-align: center;
+            padding: 40px 20px;
+            border-radius: 20px;
+            margin: 20px 0;
+        }
+
+        .loading {
+            background: rgba(255,255,255,0.8);
+            color: #2e7d32;
+        }
+
+        .loading::before {
+            content: '🌿';
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 15px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: rgba(255,205,210,0.8);
+            color: #c62828;
+        }
+
+        .error::before {
+            content: '🍂';
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .inactive {
+            background: rgba(255,255,255,0.8);
+            color: #2e7d32;
+        }
+
+        .inactive::before {
+            content: '🌙';
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 15px;
+            animation: twinkle 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .time {
+                font-size: 2rem;
+            }
+
+            .settings-content {
+                margin: 20px auto;
+                padding: 25px;
+            }
+
+            .bus-item {
+                padding: 15px;
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .bus-info {
+                text-align: center;
+            }
+
+            .bus-stop-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .time {
+                font-size: 1.5rem;
+            }
+
+            .bus-number-text {
+                font-size: 1.5rem;
+            }
+
+            .arrival-time {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating decorations -->
+    <div class="decoration">🍃</div>
+    <div class="decoration">🌿</div>
+    <div class="decoration">🌰</div>
+    <div class="decoration">🍀</div>
+
+    <div class="container">
+        <!-- Settings Button -->
+        <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+
+        <!-- Settings Panel -->
+        <div class="settings-panel" id="settingsPanel" onclick="closeSettings(event)">
+            <div class="settings-content" onclick="event.stopPropagation()">
+                <h3 class="settings-title">Forest Bus Settings</h3>
+                <div class="form-group">
+                    <label>Bus Stop Code:</label>
+                    <input type="text" id="busStopCode" placeholder="e.g., 83139">
+                </div>
+                <div class="form-group">
+                    <label>Bus Stop Name:</label>
+                    <input type="text" id="busStopName" placeholder="e.g., My Bus Stop">
+                </div>
+                <div class="form-group">
+                    <label>API Key:</label>
+                    <input type="password" id="apiKey" placeholder="LTA DataMall API Key (for local testing only)">
+                    <small style="display:block;margin-top:6px;color:#2e7d32;opacity:0.8">Tip: For production, set LTA_API_KEY as an environment variable in your Vercel project and enable "useBackend" in settings.</small>
+                </div>
+                <div class="form-group">
+                    <label>Use Backend API (recommended):</label>
+                    <input type="checkbox" id="useBackend" /> <small style="color:#2e7d32;opacity:0.8">When checked, frontend will call /api/lta on the same origin (works on Vercel)</small>
+                </div>
+                <div class="debug-info" id="debugInfo">
+                    Debug info will appear here...
+                </div>
+                <button class="btn btn-primary" onclick="updateSettings()">Save Changes 🌱</button>
+                <button class="btn btn-secondary" onclick="testAPI()">Test API Connection 🔍</button>
+                <button class="btn btn-secondary" onclick="toggleSettings()">Close 🍃</button>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="time" id="currentTime"></div>
+            <div class="date" id="currentDate"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent"></div>
+    </div>
+
+    <script>
+        // Configuration
+        let config = {
+            busStopCode: '83139', // Default bus stop code
+            busStopName: 'Totoro Forest Station', // Default bus stop name
+            apiKey: '', // Local API Key input (kept for local/mock use only)
+            updateInterval: 30000, // Update every 30 seconds
+            useBackend: true // When true, frontend will call /api/lta on the same origin (recommended for Vercel)
+        };
+
+        let isActiveTime = true; // Set to true for continuous operation during testing
+        let updateInterval;
+
+        // Initialize app
+        function init() {
+            loadConfig();
+            updateDateTime();
+            fetchBusData();
+            
+            // Update time every second
+            setInterval(updateDateTime, 1000);
+            
+            // Update bus data periodically
+            updateInterval = setInterval(fetchBusData, config.updateInterval);
+
+            // Prevent screen sleep
+            requestWakeLock();
+        }
+
+        // Debug logging function
+        function debugLog(message) {
+            const debugInfo = document.getElementById('debugInfo');
+            const timestamp = new Date().toLocaleTimeString();
+            debugInfo.innerHTML += `[${timestamp}] ${message}<br>`;
+            // Auto-scroll to the bottom
+            debugInfo.scrollTop = debugInfo.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        // Load saved configuration from localStorage
+        function loadConfig() {
+            const saved = localStorage.getItem('totoroBusConfig');
+            if (saved) {
+                try {
+                    const loadedConfig = JSON.parse(saved);
+                    // Merge loaded config with defaults, prioritizing loaded values
+                    config = {...config, ...loadedConfig};
+                    document.getElementById('busStopCode').value = config.busStopCode;
+                    document.getElementById('busStopName').value = config.busStopName;
+                    document.getElementById('apiKey').value = config.apiKey;
+                    document.getElementById('useBackend').checked = !!config.useBackend;
+                    debugLog(`Config loaded: StopCode=${config.busStopCode}, Interval=${config.updateInterval}ms`);
+                } catch (e) {
+                    debugLog(`Error loading config: ${e.message}`);
+                    // If loading fails, still set defaults from the input fields
+                    updateConfigFromInputs();
+                }
+            } else {
+                // If no config is saved, use default values from HTML and save them
+                updateConfigFromInputs();
+                saveConfig();
+            }
+        }
+
+        // Save configuration to localStorage
+        function saveConfig() {
+            try {
+                localStorage.setItem('totoroBusConfig', JSON.stringify(config));
+                debugLog('Config saved successfully');
+            } catch (e) {
+                debugLog(`Error saving config: ${e.message}`);
+            }
+        }
+
+        // Update config object from input fields and save
+        function updateConfigFromInputs() {
+            config.busStopCode = document.getElementById('busStopCode').value || '83139'; // Ensure default if empty
+            config.busStopName = document.getElementById('busStopName').value || 'Totoro Forest Station'; // Ensure default if empty
+            config.apiKey = document.getElementById('apiKey').value;
+            config.useBackend = document.getElementById('useBackend').checked;
+            saveConfig(); // Save after updating
+        }
+
+        // Update date and time display
+        function updateDateTime() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-SG', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false // Use 24-hour format
+            });
+            const date = now.toLocaleDateString('en-SG', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            document.getElementById('currentTime').textContent = time;
+            document.getElementById('currentDate').textContent = date;
+
+            // Original time check code is commented out for continuous display
+            /*
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const currentMinutes = hours * 60 + minutes;
+            const startTime = 20 * 60 + 30; // 8:30 PM
+            const endTime = 9 * 60 + 15;    // 9:15 AM
+            
+            isActiveTime = currentMinutes >= startTime || currentMinutes <= endTime;
+            */
+        }
+
+        // Test API connection function
+        async function testAPI() {
+            debugLog('Testing API connection...');
+            
+            const testApiKey = document.getElementById('apiKey').value;
+            const testBusStopCode = document.getElementById('busStopCode').value;
+
+            if (!testApiKey || !testApiKey.trim()) {
+                debugLog('ERROR: No API key provided in settings.');
+                alert("Please enter your LTA DataMall API Key.");
+                return;
+            }
+
+            if (!testBusStopCode || !testBusStopCode.trim()) {
+                debugLog('ERROR: No bus stop code provided in settings.');
+                alert("Please enter a Bus Stop Code.");
+                return;
+            }
+
+            try {
+                const url = `https://datamall2.mytransport.sg/ltaodataservice/BusArrivalv2?BusStopCode=${testBusStopCode}`;
+                debugLog(`Attempting to fetch from: ${url}`);
+                debugLog(`Using API Key: ${testApiKey.substring(0, 8)}...`);
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'AccountKey': testApiKey,
+                        'accept': 'application/json'
+                    }
+                });
+
+                debugLog(`Response status: ${response.status} ${response.statusText}`);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    debugLog(`API Response Error: ${response.status} - ${errorText}`); // Log full error
+                    throw new Error(`API Error: ${response.status} - ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                debugLog(`API Response received. Number of services found: ${data.Services ? data.Services.length : 0}`);
+                
+                if (data.Services && data.Services.length > 0) {
+                    debugLog('SUCCESS: API connection test passed!');
+                    alert('API connection successful!');
+                } else {
+                    debugLog('WARNING: No bus services found for this stop, but API call was successful.');
+                    alert('API connection successful, but no buses found for this stop.');
+                }
+
+            } catch (error) {
+                debugLog(`TEST ERROR: ${error.message}`);
+                console.error('API Test Error:', error);
+                
+                // More specific error messages for testing
+                let testErrorMsg = error.message;
+                if (error.message.includes('Failed to fetch')) {
+                    testErrorMsg = 'Network error. Check your internet connection.';
+                } else if (error.message.includes('401')) { // Unauthorized
+                    testErrorMsg = 'Authentication failed. Please verify your API Key.';
+                } else if (error.message.includes('404')) { // Not Found
+                    testErrorMsg = 'Resource not found. Check the Bus Stop Code.';
+                } else if (error.message.includes('429')) { // Rate limit
+                    testErrorMsg = 'API rate limit exceeded. Please wait and try again.';
+                } else if (error.message.includes('CORS')) {
+                    testErrorMsg = 'CORS error: Browser is blocking the request. This is expected when testing directly without a proxy or server.';
+                }
+                alert(`API Test Failed: ${testErrorMsg}`);
+            }
+        }
+
+        // Fetch bus arrival data with improved error handling and backend support
+        async function fetchBusData() {
+            const content = document.getElementById('mainContent');
+
+            try {
+                content.innerHTML = '<div class="loading">Looking for forest buses...</div>';
+
+                let data;
+
+                // If useBackend is true, call our own backend on the same origin.
+                // When deployed to Vercel, this avoids CORS because the serverless function
+                // makes the request to LTA DataMall from the server side.
+                if (config.useBackend && config.busStopCode && config.busStopCode.trim()) {
+                    const backendApiUrl = `/api/lta?busStopCode=${encodeURIComponent(config.busStopCode)}`;
+                    debugLog(`Fetching data from backend: ${backendApiUrl}`);
+
+                    const response = await fetch(backendApiUrl, { method: 'GET', headers: { 'Accept': 'application/json' } });
+
+                    if (!response.ok) {
+                        let errorText = await response.text().catch(() => '');
+                        debugLog(`Backend API Error: ${response.status} - ${errorText}`);
+                        throw new Error(`Backend API Error: ${response.status} - ${response.statusText}`);
+                    }
+
+                    data = await response.json();
+                    debugLog('Backend API call successful.');
+
+                } else if (config.apiKey && config.apiKey.trim() && config.busStopCode.trim()) {
+                    // Local direct call for testing only (may be blocked by CORS in browsers)
+                    debugLog('Attempting direct LTA API call from browser (may be blocked by CORS)...');
+                    const targetUrl = `https://datamall2.mytransport.sg/ltaodataservice/BusArrivalv2?BusStopCode=${config.busStopCode}`;
+                    const response = await fetch(targetUrl, {
+                        method: 'GET',
+                        headers: {
+                            'AccountKey': config.apiKey,
+                            'accept': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text().catch(() => '');
+                        debugLog(`Direct API Error: ${response.status} - ${errorText}`);
+                        throw new Error(`Direct API Error: ${response.status} - ${response.statusText}`);
+                    }
+
+                    data = await response.json();
+                    debugLog('Direct API call successful.');
+
+                } else {
+                    debugLog('No backend or API key available. Using mock data.');
+                    await new Promise(resolve => setTimeout(resolve, 800));
+                    data = getMockData();
+                }
+
+                displayBusData(data);
+
+            } catch (error) {
+                debugLog(`Overall fetch error: ${error.message}`);
+                console.error('Fetch Error:', error);
+
+                let errorMsg = error.message;
+                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                    errorMsg = 'Network error. Please check your internet connection.';
+                } else if (error.message.includes('CORS')) {
+                    errorMsg = 'CORS error. The API is blocked by browser security. Deploy and use the backend API on Vercel.';
+                } else if (error.message.includes('401')) {
+                    errorMsg = 'Authentication failed. Please check your API Key or server environment variable.';
+                } else if (error.message.includes('404')) {
+                    errorMsg = 'Resource not found. Check the Bus Stop Code in settings.';
+                } else if (error.message.includes('429')) {
+                    errorMsg = 'API rate limit exceeded. Please try again later.';
+                }
+
+                content.innerHTML = `
+                    <div class="error">
+                        Oops! Forest spirits are hiding<br>
+                        <small>${errorMsg}</small><br>
+                        <small>Open settings to check API key and bus stop code.</small>
+                    </div>
+                `;
+            }
+        }
+
+        // Display the fetched bus data on the page
+        function displayBusData(data) {
+            const content = document.getElementById('mainContent');
+
+            if (!data || !data.Services || data.Services.length === 0) {
+                content.innerHTML = '<div class="loading">No buses in the forest right now...</div>';
+                debugLog('No bus services found in the API response.');
+                return;
+            }
+
+            debugLog(`Displaying ${data.Services.length} bus services.`);
+            
+            const busStopElement = document.createElement('div');
+            busStopElement.className = 'bus-stop';
+
+            let busItemsHtml = '';
+            // Filter for buses that have arrival data and create HTML for each
+            data.Services.forEach(service => {
+                if (service.NextBus && service.NextBus.EstimatedArrival) {
+                    busItemsHtml += createBusItemHtml(service);
+                }
+            });
+
+            busStopElement.innerHTML = `
+                <div class="bus-stop-header">
+                    <div class="bus-stop-name">${config.busStopName}</div>
+                    <div class="bus-stop-code">${config.busStopCode}</div>
+                </div>
+                <div class="bus-list">
+                    ${busItemsHtml}
+                </div>
+            `;
+
+            content.innerHTML = ''; // Clear previous content
+            content.appendChild(busStopElement);
+        }
+
+        // Create HTML string for a single bus item
+        function createBusItemHtml(service) {
+            const now = new Date();
+            const arrivalTime = new Date(service.NextBus.EstimatedArrival);
+            const minutes = Math.round((arrivalTime - now) / (1000 * 60));
+
+            let arrivalText = 'Arriving';
+            if (minutes > 0) {
+                arrivalText = minutes === 1 ? '1 min' : `${minutes} mins`;
+            } else if (minutes === 0) {
+                arrivalText = 'Arriving Now';
+            } else {
+                arrivalText = 'Due'; // For times in the past (shouldn't happen with live data)
+            }
+
+            const load = getLoadDescription(service.NextBus.Load);
+            const type = service.NextBus.Type === 'DD' ? 'Double Deck' : 'Single Deck';
+            const wheelchairAccessible = service.NextBus.Feature === 'WAB' ? ' • ♿' : '';
+
+            let nextBusInfo = '';
+            if (service.NextBus2 && service.NextBus2.EstimatedArrival) {
+                const nextArrivalTime = new Date(service.NextBus2.EstimatedArrival);
+                const nextMinutes = Math.round((nextArrivalTime - now) / (1000 * 60));
+                nextBusInfo = ` • Next: ${nextMinutes} min${nextMinutes !== 1 ? 's' : ''}`;
+            }
+
+            return `
+                <div class="bus-item">
+                    <div class="bus-number">
+                        <div class="bus-number-text">${service.ServiceNo}</div>
+                    </div>
+                    <div class="bus-info">
+                        <div class="arrival-time">${arrivalText}</div>
+                        <div class="arrival-details">${load} • ${type}${wheelchairAccessible}${nextBusInfo}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Get human-readable description for bus load
+        function getLoadDescription(load) {
+            switch(load) {
+                case 'SEA': return 'Seats Available';
+                case 'SDA': return 'Standing Available';
+                case 'LSD': return 'Limited Standing';
+                default: return 'Unknown Load'; // Handle unexpected values
+            }
+        }
+
+        // Generate mock data for testing when no API key is available
+        function getMockData() {
+            // Simulate data for a few buses
+            const now = Date.now();
+            return {
+                Services: [
+                    {
+                        ServiceNo: "2",
+                        NextBus: {
+                            EstimatedArrival: new Date(now + 3 * 60000).toISOString(), // Arrives in 3 minutes
+                            Load: "SEA", // Seats Available
+                            Feature: "WAB", // Wheelchair Accessible
+                            Type: "DD" // Double Deck
+                        },
+                        NextBus2: {
+                            EstimatedArrival: new Date(now + 8 * 60000).toISOString(), // Arrives in 8 minutes
+                            Load: "SDA", // Standing Available
+                            Feature: "", // Not Wheelchair Accessible
+                            Type: "SD" // Single Deck
+                        }
+                    },
+                    {
+                        ServiceNo: "24",
+                        NextBus: {
+                            EstimatedArrival: new Date(now + 5 * 60000).toISOString(), // Arrives in 5 minutes
+                            Load: "LSD", // Limited Standing
+                            Feature: "",
+                            Type: "SD"
+                        }
+                    },
+                    {
+                        ServiceNo: "38",
+                        NextBus: {
+                            EstimatedArrival: new Date(now + 1 * 60000).toISOString(), // Arrives in 1 minute
+                            Load: "SDA",
+                            Feature: "WAB",
+                            Type: "SD"
+                        }
+                    }
+                ]
+            };
+        }
+
+        // Settings Panel Functions
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+            // When opening, ensure fields show current config
+            if (panel.style.display === 'block') {
+                document.getElementById('busStopCode').value = config.busStopCode;
+                document.getElementById('busStopName').value = config.busStopName;
+                document.getElementById('apiKey').value = config.apiKey;
+            }
+        }
+
+        function closeSettings(event) {
+            // Close panel if clicked outside of settings content
+            if (event.target === event.currentTarget) {
+                toggleSettings();
+            }
+        }
+
+        function updateSettings() {
+            // Update config object from inputs and save it
+            updateConfigFromInputs(); 
+            toggleSettings(); // Close the settings panel
+            debugLog('Settings updated. Fetching new data...');
+            fetchBusData(); // Refresh data with new settings
+        }
+
+        // Prevent screen from sleeping (especially useful on mobile devices)
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    await navigator.wakeLock.request('screen');
+                    debugLog('Screen wake lock acquired.');
+                } else {
+                    debugLog('Wake lock not supported by this browser.');
+                }
+            } catch (err) {
+                console.error('Wake lock request failed:', err);
+                debugLog(`Wake lock request failed: ${err.message}`);
+            }
+        }
+
+        // Initialize the application when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
